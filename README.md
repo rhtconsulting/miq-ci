@@ -77,18 +77,40 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
     - The Git repo location.
 
-# Job Descriptions
+# Job Information
 
-## Export from DEV CFME with no pipeline integration
+  * Each region has a tag e.g. DEV, TEST, etc.
 
-## Import into user-specified CFME
+  * The region tag is used to denote which commit is currently in the corresponding region
 
-## Export from DEV CFME
+  * The user can create arbitrary tags, specified in the Export jobs
 
-## Import HEAD into CFME
+  * When importing into a region, you can specify a tag in order to control which version is imported. This gives you the ability to precisely control which commit or set of commits is imported into an environment. This also gives you the ability to rollback to an older tag is you need to. 
 
-## Import into TEST CFME
+### Export from DEV CFME with no pipeline integration
 
-## Import into QA CFME
+  * Overview
 
-## Import into PROD CFME
+    - Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV CloudForms region
+
+    - Commits the exported data to the user-specified git repository using the user-specified commit message
+
+    - Tags the commit with the DEV tag to denote that this commit is where the DEV region is currently
+
+  * Available parameters
+
+    - git_repo_location - The location of the git repo including hostname and .git file location
+
+    - commit_message - The message to be saved with the commit 
+
+### Import into user-specified CFME
+
+### Export from DEV CFME
+
+### Import HEAD into CFME
+
+### Import into TEST CFME
+
+### Import into QA CFME
+
+### Import into PROD CFME
