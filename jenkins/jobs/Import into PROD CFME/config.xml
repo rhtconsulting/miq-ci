@@ -1,24 +1,24 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description></description>
+  <description>Import Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the master branch in the git repo into the PROD CloudForms region</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
       <parameterDefinitions>
         <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
+          <name>git_repo_location</name>
+          <description>The location of the git repository including hostname and .git file location</description>
+          <defaultValue>10.15.75.244:/var/lib/jenkins/CFME.git</defaultValue>
+          <regex>.+</regex>
+          <failedValidationMessage>You must enter a location of the git repository that will be used</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>tag_name</name>
-          <description>The tag and associated commit that will be imported into the region. If no tag is specified then the most recent commit will be imported. </description>
+          <description>This field is required. The tag and associated commit that will be imported into the region. </description>
           <defaultValue>QA</defaultValue>
           <regex>.+</regex>
           <failedValidationMessage></failedValidationMessage>
-        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
-        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
-          <name>git_repo_location</name>
-          <description>The location of the git repo including hostname and .git file location</description>
-          <defaultValue>10.15.75.244:/var/lib/jenkins/CFME.git</defaultValue>
-          <regex>.+</regex>
-          <failedValidationMessage>You must enter a location of the git repo to commit to</failedValidationMessage>
         </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
       </parameterDefinitions>
     </hudson.model.ParametersDefinitionProperty>
@@ -32,23 +32,26 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.4">
-      <siteName>root@10.15.75.243:22</siteName>
+      <siteName>root@10.15.75.241:22</siteName>
       <command>set -ex
 
+#Create a temporary directory for exporting
 BUILDDIR=$(mktemp -d --suffix=&quot;.CFME&quot;)
 LIFECYCLE_TAG=PROD
 
 cd ${BUILDDIR}
+
+#Clone the master branch of the user-specified git repo to BUILDDIR
 git clone $git_repo_location ${BUILDDIR}
 git checkout $tag_name .
 
-git status
-
+#The Automate rake command expects a zip file
 cd automate/
 git archive --format=zip -o ../automate.zip $tag_name .
 
 cd /var/www/miq/vmdb
 
+#Export service catalogs, dialogs, roles, tags, buttons, customization templates, and automate code
 bin/rake rhconsulting:dialogs:import[${BUILDDIR}/dialogs]
 bin/rake rhconsulting:service_catalogs:import[${BUILDDIR}/service_catalogs]
 bin/rake rhconsulting:roles:import[${BUILDDIR}/roles.yml]
@@ -56,14 +59,15 @@ bin/rake rhconsulting:tags:import[${BUILDDIR}/tags.yml]
 bin/rake rhconsulting:buttons:import[${BUILDDIR}/buttons.yml]
 bin/rake rhconsulting:customization_templates:import[${BUILDDIR}/customization_templates.yml]
 bin/rake evm:automate:restore BACKUP_ZIP_FILE=${BUILDDIR}/automate.zip
-#bin/rake &quot;rhconsulting:miq_ae_datastore:import[Customer, ${BUILDDIR}/miq_ae_datastore]&quot;
 
 cd ${BUILDDIR}
 
+#Tag this commit with the lifecycle tag (e.g. TEST, QA, etc.)
 git tag -d  $LIFECYCLE_TAG &amp;&amp; git push origin :refs/tags/$LIFECYCLE_TAG || true
 git tag $LIFECYCLE_TAG $tag_name
 git push origin master --tags
 
+#Remove the temporary directory
 if [ -n &quot;$BUILDDIR&quot; ]
 then
   echo &quot;Cleaning up temp directory that was created&quot;
