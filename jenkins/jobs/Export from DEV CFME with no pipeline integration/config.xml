@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV CloudForms region</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
+          <name>git_repo_location</name>
+          <description>The location of the git repo including hostname and .git file location</description>
+          <defaultValue>10.15.75.244:/var/lib/jenkins/CFME.git</defaultValue>
+          <regex>.+</regex>
+          <failedValidationMessage>You must enter a location of the git repo to commit to</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>commit_message</name>
+          <description></description>
+          <defaultValue>test commit message</defaultValue>
+        </hudson.model.TextParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.4">
+      <siteName>root@10.15.75.237:22</siteName>
+      <command>set -e
+
+#Create a temporary directory for exporting
+BUILDDIR=$(mktemp -d --suffix=&quot;.CFME&quot;)
+
+cd ${BUILDDIR}
+
+#Clone the master branch of the user-specified git repo to BUILDDIR
+git clone $git_repo_location ${BUILDDIR}
+
+#Remove everything from git in order to ensure only the files from the appliance are being added
+git rm -r .
+
+#Export service catalogs, dialogs, roles, tags, buttons, customization templates, and automate code
+cd /var/www/miq/vmdb
+mkdir ${BUILDDIR}/service_catalogs
+bin/rake rhconsulting:service_catalogs:export[${BUILDDIR}/service_catalogs]
+mkdir ${BUILDDIR}/dialogs
+bin/rake rhconsulting:dialogs:export[${BUILDDIR}/dialogs]
+bin/rake rhconsulting:roles:export[${BUILDDIR}/roles.yml]
+bin/rake rhconsulting:tags:export[${BUILDDIR}/tags.yml]
+bin/rake rhconsulting:buttons:export[${BUILDDIR}/buttons.yml]
+bin/rake rhconsulting:customization_templates:export[${BUILDDIR}/customization_templates.yml]
+bin/rake evm:automate:backup BACKUP_ZIP_FILE=${BUILDDIR}/automate.zip OVERWRITE=true
+
+#Automate is exported as a zip file. Unzip it before adding it git
+cd ${BUILDDIR}
+unzip automate.zip -d automate  &gt; /dev/null
+rm -f automate.zip
+
+#Add all of the files and commit it using the user-specified commit message
+git add --all
+git commit -m &quot;$commit_message&quot;  || true #Continue even if nothing was committed. Allows us to add a tag to a commit
+
+#Tag this commit with the user-specified tag and the DEV tag
+git tag -d DEV &amp;&amp; git push origin :refs/tags/DEV || echo &quot;Tag doesn&apos;t exist&quot;
+git tag DEV
+
+#Push to master
+git push origin master --tags
+
+#Remove the temporary directory
+if [ -n &quot;$BUILDDIR&quot; ]
+then
+  echo &quot;Cleaning up temp directory that was created&quot;
+  rm -rf $BUILDDIR
+fi</command>
+    </org.jvnet.hudson.plugins.SSHBuilder>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

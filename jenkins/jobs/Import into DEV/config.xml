@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>root@10.15.75.244:/var/lib/jenkins/CFME.git</url>
+        <credentialsId>f93f809a-e61b-4ca0-b022-8282fa6a43b0</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>*/1 * * * *</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.4">
+      <siteName>root@10.15.75.237:22</siteName>
+      <command>set -ex
+
+#Create a temporary directory for exporting
+BUILDDIR=$(mktemp -d --suffix=&quot;.CFME&quot;)
+LIFECYCLE_TAG=DEV
+
+cd ${BUILDDIR}
+
+#Clone the master branch of the user-specified git repo to BUILDDIR
+git clone ${GIT_URL} ${BUILDDIR}
+
+#The Automate rake command expects a zip file
+cd automate/
+git archive --format=zip -o ../automate.zip HEAD .
+
+cd /var/www/miq/vmdb
+
+#Export service catalogs, dialogs, roles, tags, buttons, customization templates, and automate code
+bin/rake rhconsulting:dialogs:import[${BUILDDIR}/dialogs]
+bin/rake rhconsulting:service_catalogs:import[${BUILDDIR}/service_catalogs]
+bin/rake rhconsulting:roles:import[${BUILDDIR}/roles.yml]
+bin/rake rhconsulting:tags:import[${BUILDDIR}/tags.yml]
+bin/rake rhconsulting:buttons:import[${BUILDDIR}/buttons.yml]
+bin/rake rhconsulting:customization_templates:import[${BUILDDIR}/customization_templates.yml]
+bin/rake evm:automate:restore BACKUP_ZIP_FILE=${BUILDDIR}/automate.zip
+
+cd ${BUILDDIR}
+
+#Tag this commit with the lifecycle tag (e.g. TEST, QA, etc.)
+git tag -d  $LIFECYCLE_TAG &amp;&amp; git push origin :refs/tags/$LIFECYCLE_TAG || true
+git tag $LIFECYCLE_TAG
+git push origin master --tags
+
+#Remove the temporary directory
+if [ -n &quot;$BUILDDIR&quot; ]
+then
+  echo &quot;Cleaning up temp directory that was created&quot;
+  rm -rf $BUILDDIR
+fi
+</command>
+    </org.jvnet.hudson.plugins.SSHBuilder>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

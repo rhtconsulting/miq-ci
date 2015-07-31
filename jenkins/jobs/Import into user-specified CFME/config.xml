@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
+          <name>git_repo_location</name>
+          <description>The location of the git repo including hostname and .git file location</description>
+          <defaultValue>10.15.75.244:/var/lib/jenkins/CFME.git</defaultValue>
+          <regex>.+</regex>
+          <failedValidationMessage>You must enter a location of the git repo to commit to</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>connection_string</name>
+          <description>The username@hostname/IP of the CFME appliance to import into</description>
+          <defaultValue>root@10.15.75.242</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.model.StringParameterDefinition>
+          <name>keyfile_location</name>
+          <description>The location of the keyfile used to connect via SSH</description>
+          <defaultValue>/var/lib/jenkins/.ssh/id_rsa</defaultValue>
+        </hudson.model.StringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
+          <name>tag_name</name>
+          <description>This field is required. The tag and associated commit that will be imported into the region. </description>
+          <defaultValue>v1</defaultValue>
+          <regex>.+</regex>
+          <failedValidationMessage></failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
+          <name>region_name</name>
+          <description>This field is required. The tag name of the region to import into. </description>
+          <defaultValue>DEV</defaultValue>
+          <regex>.+</regex>
+          <failedValidationMessage></failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>ssh -tt -o StrictHostKeyChecking=no -i $keyfile_location $connection_string &lt;&lt;EOF
+
+set -ex
+
+#Create a temporary directory for exporting
+BUILDDIR=\$(mktemp -d --suffix=&quot;.CFME&quot;)
+LIFECYCLE_TAG=$region_name
+
+cd \${BUILDDIR}
+
+#Clone the master branch of the user-specified git repo to BUILDDIR
+git clone $git_repo_location \${BUILDDIR}
+git checkout $tag_name .
+
+
+#The Automate rake command expects a zip file
+cd automate/
+git archive --format=zip -o ../automate.zip $tag_name .
+
+cd /var/www/miq/vmdb
+
+#Export service catalogs, dialogs, roles, tags, buttons, customization templates, and automate code
+bin/rake rhconsulting:dialogs:import[\${BUILDDIR}/dialogs]
+bin/rake rhconsulting:service_catalogs:import[\${BUILDDIR}/service_catalogs]
+bin/rake rhconsulting:roles:import[\${BUILDDIR}/roles.yml]
+bin/rake rhconsulting:tags:import[\${BUILDDIR}/tags.yml]
+bin/rake rhconsulting:buttons:import[\${BUILDDIR}/buttons.yml]
+bin/rake rhconsulting:customization_templates:import[\${BUILDDIR}/customization_templates.yml]
+bin/rake evm:automate:restore BACKUP_ZIP_FILE=\${BUILDDIR}/automate.zip
+
+cd \${BUILDDIR}
+
+#Tag this commit with the lifecycle tag (e.g. TEST, QA, etc.)
+git tag -d  \$LIFECYCLE_TAG &amp;&amp; git push origin :refs/tags/\$LIFECYCLE_TAG || true
+git tag \$LIFECYCLE_TAG $tag_name
+git push origin master --tags
+
+#Remove the temporary directory
+if [ -n &quot;\$BUILDDIR&quot; ]
+then
+  echo &quot;Cleaning up temp directory that was created&quot;
+  rm -rf \$BUILDDIR
+fi
+
+exit
+
+EOF
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
