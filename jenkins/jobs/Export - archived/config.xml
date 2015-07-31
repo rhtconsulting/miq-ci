@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from a user-specified CloudForms region</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.ChoiceParameterDefinition>
+          <name>region_name</name>
+          <description></description>
+          <choices class="java.util.Arrays$ArrayList">
+            <a class="string-array">
+              <string>DEV</string>
+              <string>TEST</string>
+              <string>QA</string>
+              <string>PROD</string>
+            </a>
+          </choices>
+        </hudson.model.ChoiceParameterDefinition>
+        <hudson.model.TextParameterDefinition>
+          <name>commit_message</name>
+          <description></description>
+          <defaultValue>test commit message</defaultValue>
+        </hudson.model.TextParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.0">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>/var/lib/jenkins/CFME.git</url>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <org.jvnet.hudson.plugins.SSHBuilder plugin="ssh@2.4">
+      <siteName>root@10.15.75.243:22</siteName>
+      <command>BUILDDIR=$(mktemp -d --suffix=&quot;.CFME&quot;)
+DOMAIN_EXPORT=Customer
+
+cd ${BUILDDIR}
+git clone 10.15.75.244:/var/lib/jenkins/CFME.git ${BUILDDIR}
+git rm -r .
+
+ls ${BUILDDIR}
+
+cd /var/www/miq/vmdb
+mkdir ${BUILDDIR}/service_catalogs
+bin/rake rhconsulting:service_catalogs:export[${BUILDDIR}/service_catalogs]
+mkdir ${BUILDDIR}/dialogs
+bin/rake rhconsulting:dialogs:export[${BUILDDIR}/dialogs]
+bin/rake rhconsulting:roles:export[${BUILDDIR}/roles.yml]
+bin/rake rhconsulting:tags:export[${BUILDDIR}/tags.yml]
+bin/rake rhconsulting:buttons:export[${BUILDDIR}/buttons.yml]
+bin/rake rhconsulting:customization_templates:export[${BUILDDIR}/customization_templates.yml]
+bin/rake &quot;rhconsulting:miq_ae_datastore:export[${DOMAIN_EXPORT}, ${BUILDDIR}/miq_ae_datastore]&quot;
+
+cd ${BUILDDIR}
+
+git add --all
+git commit -m &quot;$commit_message&quot;
+git push origin master
+</command>
+    </org.jvnet.hudson.plugins.SSHBuilder>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
