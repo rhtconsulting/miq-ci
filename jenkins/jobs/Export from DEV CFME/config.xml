@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <project>
   <actions/>
-  <description>Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from a user-specified CloudForms region</description>
+  <description>Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV CloudForms region</description>
   <keepDependencies>false</keepDependencies>
   <properties>
     <hudson.model.ParametersDefinitionProperty>
