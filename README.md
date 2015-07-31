@@ -4,7 +4,7 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
 # ManageIQ Host Setup
 
- 1. Install `git`:
+ 1. Install Git:
 
 
     ```
@@ -13,23 +13,18 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
  2. Install <https://github.com/rhtconsulting/cfme-rhconsulting-scripts>
 
- 3. Add and setup a build user for working with Git and the MIQ datastore. In
-    the simplest case, this can just be root, but this is obviously not the
-    most secure approach.
-
- 4. Generate a new SSH key pair for the build user and copy the public key to
+ 3. Generate a new SSH key pair for root and copy the public key to
     your Git server:
 
 
     ```
-    su - <build-user>
     mkdir -p ${HOME}/.ssh
     chmod 700 ${HOME}/.ssh
     ssh-keygen -N '' -f ${HOME}/.ssh/id_rsa
-    ssh-copy-id <build-user>@<git-server>
+    ssh-copy-id <git-user>@<git-server>
     ```
 
-# Jenkins Host Setup
+# Jenkins Setup
 
  1. Install Jenkins <http://jenkins-ci.org/>
 
@@ -62,11 +57,11 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
     chown -R jenkins: /var/lib/jenkins/.ssh
     ```
 
- 3. Use `ssh-copy-id` to send the Jenkins user key to all ManageIQ hosts which
-    Jenkins will be managing:
+ 3. Send the Jenkins user key to all ManageIQ hosts which Jenkins will be
+    managing:
 
     ```
-    runuser -u jenkins ssh-copy-id <user>@<manageiq-host>
+    runuser -u jenkins ssh-copy-id root@<manageiq-host>
     ```
 
  4. Install the job configurations from this project's `jenkins/` directory.
@@ -75,3 +70,9 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
     ```
     rsync -r jenkins/jobs jenkins@<jenkins-host>:/var/lib/jenkins/
     ```
+
+ 5. In Jenkins, configure each lifecycle job with the following:
+
+    - The SSH site for the ManageIQ host for that specific lifecycle.
+
+    - The Git repo location.
