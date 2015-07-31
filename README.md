@@ -11,7 +11,7 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
     yum install -y git
     ```
 
- 2. Install <https://github.com/rhtconsulting/cfme-rhconsulting-scripts>
+ 2. Use the instructions found at  <https://github.com/rhtconsulting/cfme-rhconsulting-scripts> to install the rake import/export scripts
 
  3. Generate a new SSH key pair for root and copy the public key to
     your Git server:
@@ -76,3 +76,19 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
     - The SSH site for the ManageIQ host for that specific lifecycle.
 
     - The Git repo location.
+
+# Job Descriptions
+
+## Export from DEV CFME with no pipeline integration
+
+## Import into user-specified CFME
+
+## Export from DEV CFME
+
+## Import HEAD into CFME
+
+## Import into TEST CFME
+
+## Import into QA CFME
+
+## Import into PROD CFME
