@@ -87,6 +87,8 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
   * When importing into a region, you can specify a tag in order to control which version is imported. This gives you the ability to precisely control which commit or set of commits is imported into an environment. This also gives you the ability to rollback to an older tag is you need to. 
 
+  * A \* denotes a required field
+
 ### Export from DEV CFME with no pipeline integration
 
   * Overview
@@ -99,11 +101,29 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the git repo including hostname and .git file location
+    - git_repo_location\* - The location of the git repo including hostname and .git file location
 
-    - commit_message - The message to be saved with the commit 
+    - commit_message\* - The message to be saved with the commit 
 
 ### Import into user-specified CFME
+
+  * Overview
+
+    - Generic job that allows the user to import a user-specified tag into a CFME appliance that is specified by user 
+
+    - This can be used to roll a feature-set into a specific appliance. It can also be used to roll-back to a specific tag. 
+
+  * Available parameters
+
+    - git_repo_location\* - The location of the git repo including hostname and .git file location
+
+    - connection_string\* - The username@hostname/IP of the CFME appliance to import into. This should be the location of the database CFME appliance  
+
+    - keyfile_location\* - The full path of the keyfile used to authenticate via SSH
+
+    - tag_name\* - The tag and associated commit that will be imported into the region. This allows you to import a specific tag into an appliance. It also gives you the ability to roll-back a region to a specific tag
+
+    - region_name\* - The name of the region that the $tag_name commit will be imported into. This tag should match up with the database appliance specified by $connection_string. For example, if the DEV database appliance is at 10.15.75.242, the commit that is imported into that appliance will be tagged with DEV ($region_name) 
 
 ### Export from DEV CFME
 
