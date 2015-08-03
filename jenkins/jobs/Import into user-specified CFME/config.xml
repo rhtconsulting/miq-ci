@@ -11,28 +11,34 @@
           <description>The location of the git repo including hostname and .git file location</description>
           <defaultValue>10.15.75.244:/var/lib/jenkins/CFME.git</defaultValue>
           <regex>.+</regex>
-          <failedValidationMessage>You must enter a location of the git repo to commit to</failedValidationMessage>
+          <failedValidationMessage>You must enter a location of the git repo</failedValidationMessage>
         </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>connection_string</name>
-          <description>The username@hostname/IP of the CFME appliance to import into</description>
+          <description>The &lt;username@hostname/IP&gt; of the CFME appliance to import into. This should be the location of the database CFME appliance. </description>
           <defaultValue>root@10.15.75.242</defaultValue>
-        </hudson.model.StringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
+          <regex>.+</regex>
+          <failedValidationMessage>You must specify the username and hostname of the appliance with which to connect</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>keyfile_location</name>
-          <description>The location of the keyfile used to connect via SSH</description>
+          <description>The full path of the keyfile used to authenticate via SSH. </description>
           <defaultValue>/var/lib/jenkins/.ssh/id_rsa</defaultValue>
-        </hudson.model.StringParameterDefinition>
+          <regex>.+</regex>
+          <failedValidationMessage>Connecting via SSH requires an SSH keyfile</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
         <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>tag_name</name>
-          <description>This field is required. The tag and associated commit that will be imported into the region. </description>
+          <description>The tag and associated commit that will be imported into the region. 
+
+This allows you to import a specific tag into an appliance. It also gives you the ability to roll-back a region to a specific tag. </description>
           <defaultValue>v1</defaultValue>
           <regex>.+</regex>
-          <failedValidationMessage></failedValidationMessage>
+          <failedValidationMessage>A tag name is required</failedValidationMessage>
         </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
         <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>region_name</name>
-          <description>This field is required. The tag name of the region to import into. </description>
+          <description>The name of the region that the $tag_name commit will be imported into. This tag should match up with the database appliance specified by $connection_string. For example, if the DEV database appliance is at 10.15.75.242, the commit that is imported into that appliance will be tagged with DEV ($region_name)</description>
           <defaultValue>DEV</defaultValue>
           <regex>.+</regex>
           <failedValidationMessage></failedValidationMessage>
