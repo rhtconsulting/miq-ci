@@ -125,9 +125,19 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
     - region_name\* - The name of the region that the $tag_name commit will be imported into. This tag should match up with the database appliance specified by $connection_string. For example, if the DEV database appliance is at 10.15.75.242, the commit that is imported into that appliance will be tagged with DEV ($region_name) 
 
-### Export from DEV CFME
+### Import HEAD to DEV 
 
-### Import HEAD into CFME
+  * Overview
+
+    - Polls the configured git repository every 1 minute looking for a change to the master branch
+
+      - If a change is detected on the master branch, the newest code is automatically imported in the DEV CFME appliance
+
+      - This allows you to have private DEV environments that all roll-up into the DEV appliance. 
+
+      - Each contributor will check their changes into the master branch and resolve any merge conflicts and/or rebase. This job will then automatically detect the change to the master branch and keep the DEV appliance current with the master branch
+
+### Export from DEV CFME
 
 ### Import into TEST CFME
 
