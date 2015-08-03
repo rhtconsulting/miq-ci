@@ -28,25 +28,15 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
  1. Install Jenkins <http://jenkins-ci.org/>
 
- 2. Install the following plugins:
+ 2. Install the following plugins and their dependencies:
 
-    - Build Pipeline Plugin v1.4.7
+    - [Build Pipeline Plugin v1.4.7](https://wiki.jenkins-ci.org/display/JENKINS/Build+Pipeline+Plugin)
 
-    - Credentials Plugin v1.22
+    - [Git Plugin v2.4.0](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin)
 
-    - Git Client Plugin v1.18.0
+    - [SSH plugin v2.4](https://wiki.jenkins-ci.org/display/JENKINS/SSH+plugin)
 
-    - Git Parameter Plugin v0.4.0
-
-    - Git Plugin v2.4.0
-
-    - Parameterized Trigger v2.27
-
-    - SSH Credentials v1.11
-
-    - SSH v2.4
-
-    - Validating String Parameter v2.3
+    - [Validating String Parameter v2.3](https://wiki.jenkins-ci.org/display/JENKINS/Validating+String+Parameter+Plugin)
 
  2. Generate an SSH key pair for the Jenkins user:
 
