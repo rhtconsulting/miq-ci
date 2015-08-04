@@ -13,11 +13,13 @@
           <regex>.+</regex>
           <failedValidationMessage>You must enter a location of the git repository that will be used</failedValidationMessage>
         </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
-        <hudson.model.StringParameterDefinition>
+        <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>tag_name</name>
-          <description>Allows the user to tag a commit with the specified tag name. A tag is required to import into another region</description>
+          <description>The tag name to be given to this commit. This allows you to tag a feature/milestone. This tag name is later used to import a specific commit into a region, giving you the ability to roll forward or backwards.</description>
           <defaultValue></defaultValue>
-        </hudson.model.StringParameterDefinition>
+          <regex>.+</regex>
+          <failedValidationMessage>Tag name is required for pipeline integration</failedValidationMessage>
+        </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
         <hudson.model.TextParameterDefinition>
           <name>commit_message</name>
           <description>The message to be used in a commit - &quot;git commit -m &lt;$commit_message&gt;&quot;</description>

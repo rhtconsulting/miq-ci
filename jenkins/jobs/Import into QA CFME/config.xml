@@ -76,6 +76,13 @@ fi
 </command>
     </org.jvnet.hudson.plugins.SSHBuilder>
   </builders>
-  <publishers/>
+  <publishers>
+    <au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger plugin="build-pipeline-plugin@1.4.7">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.CurrentBuildParameters plugin="parameterized-trigger@2.27"/>
+      </configs>
+      <downstreamProjectNames>Import into PROD CFME</downstreamProjectNames>
+    </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>
+  </publishers>
   <buildWrappers/>
 </project>

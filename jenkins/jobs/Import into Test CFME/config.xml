@@ -16,7 +16,7 @@
         <hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition plugin="validating-string-parameter@2.3">
           <name>tag_name</name>
           <description>This field is required. The tag and associated commit that will be imported into the region. </description>
-          <defaultValue>DEV</defaultValue>
+          <defaultValue></defaultValue>
           <regex>.+</regex>
           <failedValidationMessage></failedValidationMessage>
         </hudson.plugins.validating__string__parameter.ValidatingStringParameterDefinition>
@@ -76,6 +76,13 @@ fi
 </command>
     </org.jvnet.hudson.plugins.SSHBuilder>
   </builders>
-  <publishers/>
+  <publishers>
+    <au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger plugin="build-pipeline-plugin@1.4.7">
+      <configs>
+        <hudson.plugins.parameterizedtrigger.CurrentBuildParameters plugin="parameterized-trigger@2.27"/>
+      </configs>
+      <downstreamProjectNames>Import into QA CFME</downstreamProjectNames>
+    </au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger>
+  </publishers>
   <buildWrappers/>
 </project>
