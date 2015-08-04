@@ -92,10 +92,10 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
   * The region tag is used to denote which commit is currently in the corresponding region. For example, if the region
     data currently in region 10 is commit 8eb2096 then that commit will be tagged with the region10 tag.
 
-  * To be added to the pipeline view, the first job that must be run is the Export from <DEV-REGION> job. In that job,
+  * To be added to the pipeline view, the first job that must be run is the Export from \<DEV-REGION\> job. In that job,
     you must specify a tag. That tag corresponds to a feature/milestone/bugfix that can later be promoted to other
     regions or rolled-back. For example, say that you just finished sprint #7 and are ready to promote to the other
-    regions for testing and later production workloads. Run the Export from <DEV-REGION> job and specify $tag_name,
+    regions for testing and later production workloads. Run the Export from \<DEV-REGION\> job and specify $tag_name,
     something like "v7". That job will then be added to the pipeline view and v7 is what will be promoted from region
     to region. You can use the pipeline view to track exactly what tag (feature/milestone/bugfix) is in what region.
 
