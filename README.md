@@ -26,7 +26,7 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
 # Jenkins Setup
 
- 1. Install Jenkins <http://jenkins-ci.org/>
+ 1. [Install Jenkins](http://jenkins-ci.org/) if you do not have an instance already. This project was tested using version 1.622
 
  2. Install the following plugins and their dependencies:
 
@@ -73,17 +73,17 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
   * The region tag is used to denote which commit is currently in the corresponding region
 
-  * The user can create arbitrary tags, specified in the Export jobs
+  * The user can create arbitrary tags, specified in the Export jobs to correspond to feature/milestone commits
 
-  * When importing into a region, you can specify a tag in order to control which version is imported. This gives you the ability to precisely control which commit or set of commits is imported into an environment. This also gives you the ability to rollback to an older tag is you need to. 
+  * When importing into a region, the user can specify a tag in order to control which version is imported. This gives the user the ability to precisely control which commit or set of commits is imported into an environment. This also gives the user the ability to rollback to an older tag if needed 
 
-  * All fields are required unless specified otherwise
+  * All fields are required unless otherwise specified
 
-### Export from DEV CFME with no pipeline integration
+### Export from DEV MIQ with no pipeline integration
 
   * Overview
 
-    - Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV CloudForms region
+    - Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV ManageIQ region
 
     - Commits the exported data to the user-specified git repository using the user-specified commit message
 
@@ -95,11 +95,11 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
     - commit_message - The message to be used in a commit - "git commit -m $commit_message" 
 
-### Import into user-specified CFME
+### Import into user-specified MIQ
 
   * Overview
 
-    - Generic job that allows the user to import a user-specified tag into a CFME appliance that is specified by user 
+    - Generic job that allows the user to import a user-specified tag into a MIQ appliance that is specified by user
 
     - This can be used to roll a feature-set into a specific appliance. It can also be used to roll-back to a specific tag. 
 
@@ -107,7 +107,7 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
     - git_repo_location - The location of the git repo including hostname and .git file location
 
-    - connection_string - The username@hostname/IP of the CFME appliance to import into. This should be the location of the database CFME appliance  
+    - connection_string - The username@hostname/IP of the MIQ appliance to import into. This should be the location of the database MIQ appliance
 
     - keyfile_location - The full path of the keyfile used to authenticate via SSH
 
@@ -121,25 +121,25 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
     - Polls the configured git repository every 1 minute looking for a change to the master branch
 
-    - If a change is detected on the master branch, the newest code is automatically imported in the DEV CFME appliance
+    - If a change is detected on the master branch, the newest code is automatically imported in the DEV MIQ appliance
 
     - This allows you to have private DEV environments that all roll-up into the DEV appliance. 
 
     - Each contributor will check their changes into the master branch and resolve any merge conflicts and/or rebase. This job will then automatically detect the change to the master branch and keep the DEV appliance current with the master branch
 
-### Export from DEV CFME
+### Export from DEV MIQ
 
   * Overview
 
-    - Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV CloudForms region
+    - Export Automate domains, buttons,  customization templates, roles, service catalogs, and tags from the DEV ManageIQ region
 
     - Commits the exported data to the user-specified git repository using the user-specified commit message
 
     - Tags the commit with the DEV tag to denote that this commit is where the DEV region is currently
 
-    - This job is the beginning job of the CFME pipeline integration. Once this job is executed, a new pipeline ID is created and the user can then use the pipeline view to run the rest of the jobs in the pipeline
+    - This job is the beginning job of the MIQ pipeline integration. Once this job is executed, a new pipeline ID is created and the user can then use the pipeline view to run the rest of the jobs in the pipeline
 
-    -  The downstream project to be built after this job completes is Import into TEST CFME
+    -  The downstream project to be built after this job completes is Import into TEST MIQ
 
   * Available parameters
 
@@ -149,50 +149,50 @@ This project provides a CI lifecycle process for ManageIQ using Jenkins.
 
     - commit_message - The message to be used in a commit - "git commit -m $commit_message" 
 
-### Import into TEST CFME
+### Import into TEST MIQ
 
   * Overview
 
-    - Import the commit on the master branch in $git_repo corresponding with $tag_name into the TEST CFME appliance
+    - Import the commit on the master branch in $git_repo corresponding with $tag_name into the TEST MIQ appliance
 
-    - This job is part of the CFME build pipeline and must be triggered manually from the pipeline view
+    - This job is part of the MIQ build pipeline and must be triggered manually from the pipeline view
 
-    - The upstream job, Export from DEV CFME, must have completed successfully to run this job
+    - The upstream job, Export from DEV MIQ, must have completed successfully to run this job
 
   * Available parameters
 
     - git_repo_location - The location of the git repo including hostname and .git file location
 
-    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this job through the build pipeline from the Export from DEV CFME job
+    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this job through the build pipeline from the Export from DEV MIQ job
 
-### Import into QA CFME
+### Import into QA MIQ
 
   * Overview
 
-    - Import the commit on the master branch in $git_repo corresponding with $tag_name into the QA CFME appliance
+    - Import the commit on the master branch in $git_repo corresponding with $tag_name into the QA MIQ appliance
 
-    - This job is part of the CFME build pipeline and must be triggered manually from the pipeline view
+    - This job is part of the MIQ build pipeline and must be triggered manually from the pipeline view
 
-    - The upstream job, Import into TEST CFME, must have completed successfully to run this job
+    - The upstream job, Import into TEST MIQ, must have completed successfully to run this job
 
   * Available parameters
 
     - git_repo_location - The location of the git repo including hostname and .git file location
 
-    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this job through the build pipeline from the Import into TEST CFME job
+    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this job through the build pipeline from the Import into TEST MIQ job
 
-### Import into PROD CFME
+### Import into PROD MIQ
 
   * Overview
 
-    - Import the commit on the master branch in $git_repo corresponding with $tag_name into the PROD CFME appliance
+    - Import the commit on the master branch in $git_repo corresponding with $tag_name into the PROD MIQ appliance
 
-    - This job is part of the CFME build pipeline and must be triggered manually from the pipeline view
+    - This job is part of the MIQ build pipeline and must be triggered manually from the pipeline view
 
-    - The upstream job, Import into QA CFME, must have completed successfully to run this job
+    - The upstream job, Import into QA MIQ, must have completed successfully to run this job
 
   * Available parameters
 
     - git_repo_location - The location of the git repo including hostname and .git file location
 
-    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this job through the build pipeline from the Import into QA CFME job
+    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this job through the build pipeline from the Import into QA MIQ job
