@@ -6,29 +6,29 @@ is an a region at a given time.
 
 ## Contents
 
-  * [Continuous Integration Workflow Overview](#Continuous Integration Workflow Overview)
+  * [Continuous Integration Workflow Overview](#continuous-integration-workflow-overview)
 
-  * [Prerequisites](#Prerequisites)
+  * [Prerequisites](#prerequisites)
 
-  * [ManageIQ Database Appliance Setup](#ManageIQ Database Appliance Setup)
+  * [ManageIQ Database Appliance Setup](#manageiq-database-appliance-setup)
 
-  * [Jenkins Setup](#Jenkins Setup)
+  * [Jenkins Setup](#jenkins-setup)
 
-  * [Job Information](#Job Information)
+  * [Job Information](#job-information)
 
-    - [Export from DEV MIQ with no pipeline integration](#Export from DEV MIQ with no pipeline integration)
+    - [Export from DEV MIQ with no pipeline integration](#export-from-dev-miq-with-no-pipeline-integration)
 
-    - [Import into user-specified MIQ](#Import into user-specified MIQ)
+    - [Import into user-specified MIQ](#import-into-user-specified-miq)
 
-    - [Import HEAD to DEV](#Import HEAD to DEV)
+    - [Import HEAD to DEV](#import-head-to-dev)
 
-    - [Export from DEV MIQ](#Export from DEV MIQ)
+    - [Export from DEV MIQ](#export-from-dev-miq)
 
-    - [Import into TEST MIQ](#Import into TEST MIQ)
+    - [Import into TEST MIQ](#import-into-test-miq)
 
-    - [Import into QA MIQ](#Import into QA MIQ)
+    - [Import into QA MIQ](#import-into-qa-miq)
 
-    - [Import into PROD MIQ](#Import into PROD MIQ)
+    - [Import into PROD MIQ](#import-into-prod-miq)
 
 ## Continuous Integration Workflow Overview
 
