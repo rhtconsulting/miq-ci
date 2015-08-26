@@ -1,6 +1,8 @@
 # miq-ci
 
-This project provides a CI pipeline for ManageIQ region data using Jenkins.
+This project provides a CI pipeline for ManageIQ region data using Jenkins. It provides a pipeline
+view that allows you to visualize which version of region data (automate domains, dialogs, service catalogs, etc.)
+is an a region at a given time. 
 
 # Continuous Integration Workflow Overview
 
@@ -109,8 +111,9 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Each region has a corresponding tag e.g. region10, region20, etc.
 
-  * Each region is a different environment to promote to within the pipeline. For example, region 10 could be the DEV
-    region, region 20 the TEST region, etc.
+  * Each region is a different environment to promote to within the pipeline. For example, region 10 could be your DEV
+    region, region 20 your TEST region, etc. We will use DEV, TEST, QA, and PROD for simplicity's sake. This pipeline 
+    can be expanded to any arbitrary number of regions and environments. 
 
   * The region tag is used to denote which commit is currently in the corresponding region. For example, if the region
     data currently in region 10 is commit 8eb2096 then that commit will be tagged with the region10 tag.
