@@ -2,20 +2,46 @@
 
 This project provides a CI pipeline for ManageIQ region data using Jenkins. It provides a pipeline
 view that allows you to visualize which version of region data (automate domains, dialogs, service catalogs, etc.)
-is an a region at a given time. 
+is an a region at a given time.
 
-# Continuous Integration Workflow Overview
+## Contents
+
+  * [Continuous Integration Workflow Overview](#Continuous Integration Workflow Overview)
+
+  * [Prerequisites](#Prerequisites)
+
+  * [ManageIQ Database Appliance Setup](#ManageIQ Database Appliance Setup)
+
+  * [Jenkins Setup](#Jenkins Setup)
+
+  * [Job Information](#Job Information)
+
+    - [Export from DEV MIQ with no pipeline integration](#Export from DEV MIQ with no pipeline integration)
+
+    - [Import into user-specified MIQ](#Import into user-specified MIQ)
+
+    - [Import HEAD to DEV](#Import HEAD to DEV)
+
+    - [Export from DEV MIQ](#Export from DEV MIQ)
+
+    - [Import into TEST MIQ](#Import into TEST MIQ)
+
+    - [Import into QA MIQ](#Import into QA MIQ)
+
+    - [Import into PROD MIQ](#Import into PROD MIQ)
+
+## Continuous Integration Workflow Overview
 
   ![Workflow diagram](docs/miq_ci_workflow.png)
 
-# Prerequisites
+## Prerequisites
 
   * A Git server to act as a VCS for your ManageIQ region data
 
   * A ManageIQ appliance with the "Database Operations" role turned on in each region you wish to add to the CI pipeline
 
 
-# ManageIQ Database Appliance Setup
+## ManageIQ Database Appliance Setup
 
  This configuration should be done on the database appliance in each region that you wish to include in the CI pipeline
 
@@ -40,7 +66,7 @@ is an a region at a given time.
     ssh-copy-id <git-user>@<git-server>
     ```
 
-# Jenkins Setup
+## Jenkins Setup
 
  1. [Install Jenkins](http://jenkins-ci.org/) if you do not already have an instance. This project was tested
     using version 1.622
@@ -107,7 +133,7 @@ is an a region at a given time.
        Import into PROD MIQ as it is the last step in pipeline and does not have any jobs after it
 
 
-# Job Information
+## Job Information
 
   * Each region has a corresponding tag e.g. region10, region20, etc.
 
