@@ -80,6 +80,25 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
     * For example, you would add an SSH site for the region 10 database appliance, and the region 20 database appliance,
       and the region 30 database appliance, etc.
+ 
+ 6. In order for the pipeline to be created, you must set the Downstream Project on a job. In our case,
+    we want the Export from DEV MIQ job to be the first one in the pipeline so we will set the Downstream Project on it first. 
+    It will not have an Upstream Project.  
+    
+    1. Make sure that you've imported the job you wish to add to the pipeline and then go to it in Jenkins
+
+    2. Click "Configure" and then scroll down to the "Post-build Actions" section 
+
+    3. Click the "Add post-build action" dropdown and select "Build other projects (manual step)" 
+
+    4. For the "Downstream Project Names" field we want to set it to the next job in the pipeline, or Import into TEST MIQ
+
+    5. Click the "Add Parameters" dropdown and select "Current build parameters". This will ensure that the current Git server, 
+       tag, etc. all get passed through the pipeline
+
+    6. Repeat steps 1-5 for each job in the pipeline to set a Downstream Project, other than for the last job in the pipeline.
+       In our case, we would do steps 1-5 for Import into DEV MIQ, Import into TEST MIQ, and Import into QA MIQ. We would omit 
+       Import into PROD MIQ as it is the last step in pipeline and does not have any jobs after it
 
 
 # Job Information
@@ -92,14 +111,9 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
   * The region tag is used to denote which commit is currently in the corresponding region. For example, if the region
     data currently in region 10 is commit 8eb2096 then that commit will be tagged with the region10 tag.
 
-  * To be added to the pipeline view, the first job that must be run is the Export from \<DEV-REGION\> job. In that job,
-    you must specify a tag. That tag corresponds to a feature/milestone/bugfix that can later be promoted to other
-    regions or rolled-back. For example, say that you just finished sprint #7 and are ready to promote to the other
-    regions for testing and later production workloads. Run the Export from \<DEV-REGION\> job and specify $tag_name,
-    something like "v7". That job will then be added to the pipeline view and v7 is what will be promoted from region
-    to region. You can use the pipeline view to track exactly what tag (feature/milestone/bugfix) is in what region.
+  * For an instance to be added to the pipeline view, the first job that must be run is the Export from \<DEV-REGION\> job.
 
-  * All fields are required unless otherwise specified
+  * All fields are required unless otherwise specified.
 
 ### Export from DEV MIQ with no pipeline integration
 
@@ -114,9 +128,9 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the Git repository including hostname and .git file location
+    - ```git_repo_location``` - The location of the Git repository including hostname and .git file location
 
-    - commit_message - The message to be used in a commit - "git commit -m $commit_message" 
+    - ```commit_message``` - The message to be used in a commit - "git commit -m $commit_message" 
 
 ### Import into user-specified MIQ
 
@@ -129,17 +143,17 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the Git repository including hostname and .git file location
+    - ```git_repo_location``` - The location of the Git repository including hostname and .git file location
 
-    - connection_string - The username@hostname/IP of the MIQ appliance to import into. This should be the location of
+    - ```connection_string``` - The username@hostname/IP of the MIQ appliance to import into. This should be the location of
       the database MIQ appliance
 
-    - keyfile_location - The full path of the keyfile used to authenticate via SSH
+    - ```keyfile_location``` - The full path of the keyfile used to authenticate via SSH
 
-    - tag_name - The tag and associated commit that will be imported into the region. This allows you to import a
+    - ```tag_name``` - The tag and associated commit that will be imported into the region. This allows you to import a
       specific tag into an appliance. It also gives you the ability to roll-back a region to a specific tag
 
-    - region_name - The name of the region that the $tag_name commit will be imported into. This tag should match up
+    - ```region_name``` - The name of the region that the $tag_name commit will be imported into. This tag should match up
       with the database appliance specified by $connection_string. For example, if the DEV database appliance is at
       10.15.75.242, the commit that is imported into that appliance will be tagged with DEV ($region_name)
 
@@ -175,13 +189,13 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the Git repository including hostname and .git file location
+    - ```git_repo_location``` - The location of the Git repository including hostname and .git file location
 
-    - tag_name - The tag name to be given to this commit. This allows you to tag a feature/milestone.
+    - ```tag_name``` - The tag name to be given to this commit. This allows you to tag a feature/milestone.
       This tag name is later used to import a specific commit into a region, giving you the ability to roll
       forward or backwards.
 
-    - commit_message - The message to be used in a commit - "git commit -m $commit_message" 
+    - ```commit_message``` - The message to be used in a commit - "git commit -m $commit_message" 
 
 ### Import into TEST MIQ
 
@@ -195,9 +209,9 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the Git repository including hostname and .git file location
+    - ```git_repo_location``` - The location of the Git repository including hostname and .git file location
 
-    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this
+    - ```tag_name``` - The tag and associated commit that will be imported into the region. That value is passed into this
       job through the build pipeline from the Export from DEV MIQ job
 
 ### Import into QA MIQ
@@ -212,9 +226,9 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the Git repository including hostname and .git file location
+    - ```git_repo_location``` - The location of the Git repository including hostname and .git file location
 
-    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this
+    - ```tag_name``` - The tag and associated commit that will be imported into the region. That value is passed into this
       job through the build pipeline from the Import into TEST MIQ job
 
 ### Import into PROD MIQ
@@ -229,7 +243,7 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
   * Available parameters
 
-    - git_repo_location - The location of the Git repository including hostname and .git file location
+    - ```git_repo_location``` - The location of the Git repository including hostname and .git file location
 
-    - tag_name - The tag and associated commit that will be imported into the region. That value is passed into this
+    - ```tag_name``` - The tag and associated commit that will be imported into the region. That value is passed into this
       job through the build pipeline from the Import into QA MIQ job
