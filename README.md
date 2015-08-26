@@ -2,6 +2,10 @@
 
 This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
+# Continuous Integration Workflow Overview
+
+  ![Workflow diagram](docs/miq_ci_workflow.png)
+
 # Prerequisites
 
   * A Git server to act as a VCS for your ManageIQ region data
@@ -50,7 +54,7 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
 
     * [Validating String Parameter v2.3](https://wiki.jenkins-ci.org/display/JENKINS/Validating+String+Parameter+Plugin)
 
- 2. Generate an SSH key pair for the Jenkins user:
+ 3. Generate an SSH key pair for the Jenkins user:
 
     ```
     mkdir -p /var/lib/jenkins/.ssh
@@ -59,13 +63,13 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
     chown -R jenkins: /var/lib/jenkins/.ssh
     ```
 
- 3. Send the Jenkins user key to all ManageIQ database appliances which will be managed by Jenkins in the CI Pipeline
+ 4. Send the Jenkins user key to all ManageIQ database appliances which will be managed by Jenkins in the CI Pipeline
 
     ```
     runuser -u jenkins ssh-copy-id root@<manageiq-host>
     ```
 
- 4. Install the job configurations from this project's `jenkins/` directory
+ 5. Install the job configurations from this project's `jenkins/` directory
 
 
     ```
@@ -73,7 +77,7 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
     ```
 
 
- 5. Add an SSH site entry for each ManageIQ database appliance which will be managed by Jenkins in the CI
+ 6. Add an SSH site entry for each ManageIQ database appliance which will be managed by Jenkins in the CI
     pipeline
 
     * Manage Jenkins -> Configure System -> SSH remote hosts -> Add
@@ -81,7 +85,7 @@ This project provides a CI pipeline for ManageIQ region data using Jenkins.
     * For example, you would add an SSH site for the region 10 database appliance, and the region 20 database appliance,
       and the region 30 database appliance, etc.
  
- 6. In order for the pipeline to be created, you must set the Downstream Project on a job. In our case,
+ 7. In order for the pipeline to be created, you must set the Downstream Project on a job. In our case,
     we want the Export from DEV MIQ job to be the first one in the pipeline so we will set the Downstream Project on it first. 
     It will not have an Upstream Project.  
     
