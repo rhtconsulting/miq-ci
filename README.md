@@ -1,8 +1,8 @@
 # miq-ci
 
-This project provides a CI pipeline for ManageIQ region data using Jenkins. It provides a pipeline
+This project provides a continuous integration (CI) pipeline for ManageIQ region data using Jenkins. It provides a pipeline
 view that allows you to visualize which version of region data (automate domains, dialogs, service catalogs, etc.)
-is an a region at a given time.
+is in a region at a given time.
 
 ## Contents
 
